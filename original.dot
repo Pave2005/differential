@@ -1,0 +1,8 @@
+digraph G { 
+node [shape = record];
+ 6270057700  6270057700 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " / "];
+6270057700 -> 6270057140
+ 6270057700 -> 6270057300 
+ 6270057140 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " x "];
+ 6270057300 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " x "];
+}
