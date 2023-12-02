@@ -1,8 +1,24 @@
 digraph G { 
 node [shape = record];
- 6270057700  6270057700 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " / "];
-6270057700 -> 6270057140
- 6270057700 -> 6270057300 
- 6270057140 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " x "];
- 6270057300 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " x "];
+ 13330057700  13330057700 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " / "];
+13330057700 -> 13330057140
+ 13330057700 -> 13330056360 
+ 13330057140 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " ^ "];
+13330057140 -> 13330057500
+ 13330057140 -> 13330056320 
+ 13330057500 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " + "];
+13330057500 -> 13330057540
+ 13330057500 -> 13330056260 
+ 13330057540 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " * "];
+13330057540 -> 13330057300
+ 13330057540 -> 13330057340 
+ 13330057300 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 2 "];
+ 13330057340 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " x "];
+ 13330056260 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 5 "];
+ 13330056320 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 2 "];
+ 13330056360 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " ^ "];
+13330056360 -> 13330056420
+ 13330056360 -> 13330056460 
+ 13330056420 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " x "];
+ 13330056460 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 3 "];
 }

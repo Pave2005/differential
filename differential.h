@@ -15,8 +15,6 @@ struct Tree
 {
     TreeNode* root;
     FILE* file;
-
-    TreeNode* cpy_root; // спросить как по другому лучше сделать
     int counter;
 };
 
@@ -42,17 +40,26 @@ enum EXPRESSION
     CALCULATED = 2,
 };
 
+enum PASS
+{
+    FIRST_PASS = 1,
+    SECOND_PASS = 2,
+};
+
 char* EvalCtor (Tree* tree);
 void EvalDtor (Tree* tree, TreeNode* node);
-TreeNode* c (Tree* tree, TreeNode* node);
+TreeNode* c (const TreeNode* node);
 long FileSize (FILE* file);
 char* ReadText (long file_size, FILE* file);
 void BaseOfData (TreeNode** node, char* data_buf, int* tmp_count);
 void PrintfNode (const TreeNode* node, const Tree* tree);
 int Eval (TreeNode* node);
 TreeNode* CreateNode (enum TYPES TYPE, int VALUE, TreeNode* left, TreeNode* right);
-TreeNode* d (Tree* tree, const TreeNode* node);
+TreeNode* d (const TreeNode* node);
 void EvalDump (Tree* tree, TreeNode* node, enum EXPRESSION EXPRESSION);
 void TreeBody (TreeNode* node, FILE* file);
+void TreeDel (TreeNode* node);
+void Simpler (TreeNode* node, enum PASS PASS);
+void EvalLatex (TreeNode* node, FILE* latex_file);
 
 #endif

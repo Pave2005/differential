@@ -1,24 +1,68 @@
 digraph G { 
 node [shape = record];
- 6274040700  6274040700 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " / "];
-6274040700 -> 6274040500
- 6274040700 -> 6274040640 
- 6274040500 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " - "];
-6274040500 -> 6274040300
- 6274040500 -> 6274040440 
- 6274040300 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " * "];
-6274040300 -> 6274040200
- 6274040300 -> 6274040240 
- 6274040200 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 1 "];
- 6274040240 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " x "];
- 6274040440 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " * "];
-6274040440 -> 6274040340
- 6274040440 -> 6274040400 
- 6274040340 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " x "];
- 6274040400 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 1 "];
- 6274040640 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " * "];
-6274040640 -> 6274040540
- 6274040640 -> 6274040600 
- 6274040540 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " x "];
- 6274040600 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " x "];
+ 13334042300  13334042300 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " / "];
+13334042300 -> 13334042100
+ 13334042300 -> 13334042240 
+ 13334042100 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " - "];
+13334042100 -> 13334041300
+ 13334042100 -> 13334042040 
+ 13334041300 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " * "];
+13334041300 -> 13334041200
+ 13334041300 -> 13334041240 
+ 13334041200 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " * "];
+13334041200 -> 13334040200
+ 13334041200 -> 13334041140 
+ 13334040200 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 2 "];
+ 13334041140 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " * "];
+13334041140 -> 13334040440
+ 13334041140 -> 13334041100 
+ 13334040440 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " + "];
+13334040440 -> 13330057540
+ 13334040440 -> 13330056260 
+ 13330057540 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " * "];
+13330057540 -> 13330057300
+ 13330057540 -> 13330057340 
+ 13330057300 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 2 "];
+ 13330057340 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " x "];
+ 13330056260 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 5 "];
+ 13334041100 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 2 "];
+ 13334041240 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " ^ "];
+13334041240 -> 13330056420
+ 13334041240 -> 13330056460 
+ 13330056420 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " x "];
+ 13330056460 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 3 "];
+ 13334042040 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " * "];
+13334042040 -> 13334041340
+ 13334042040 -> 13334042000 
+ 13334041340 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " ^ "];
+13334041340 -> 13330057500
+ 13334041340 -> 13330056320 
+ 13330057500 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " + "];
+13330057500 -> 13330057540
+ 13330057500 -> 13330056260 
+ 13330057540 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " * "];
+13330057540 -> 13330057300
+ 13330057540 -> 13330057340 
+ 13330057300 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 2 "];
+ 13330057340 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " x "];
+ 13330056260 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 5 "];
+ 13330056320 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 2 "];
+ 13334042000 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " * "];
+13334042000 -> 13334041400
+ 13334042000 -> 13334041740 
+ 13334041400 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 3 "];
+ 13334041740 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " ^ "];
+13334041740 -> 13334041440
+ 13334041740 -> 13334041600 
+ 13334041440 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " x "];
+ 13334041600 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 2 "];
+ 13334042240 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " ^ "];
+13334042240 -> 13334042140
+ 13334042240 -> 13334042200 
+ 13334042140 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " ^ "];
+13334042140 -> 13330056420
+ 13334042140 -> 13330056460 
+ 13330056420 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " x "];
+ 13330056460 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 3 "];
+ 13334042200 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 2 "];
 }

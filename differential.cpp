@@ -241,31 +241,15 @@ void Insert (TreeNode** node, char* answer)
 
 }
 
-TreeNode* c (Tree* tree, TreeNode* node) // copy tree
+TreeNode* c (TreeNode* node)
 {
-    if (tree->counter == 0)
-    {
-        tree->cpy_root = (TreeNode*)calloc (1, sizeof (TreeNode)) ;
-        tree->cpy_root->value = node->value;
-        tree->cpy_root->type = node->type;
-        tree->cpy_root->left = node->left;
-        tree->cpy_root->right = node->right;
-        tree->counter++;
-    }
-    else if (tree->counter != 0)
-    {
-        TreeNode* cpy_node = (TreeNode*)calloc (1, sizeof (TreeNode)) ;
-        cpy_node->value = node->value;
-        cpy_node->type = node->type;
-        cpy_node->left = node->left;
-        cpy_node->right = node->right;
-    }
-    if (node->left != 0)
-        c (tree, node->left);
-    if (node->right != 0)
-        c (tree, node->right);
-    tree->counter = 0;
-    return tree->cpy_root;
+    TreeNode* cpy_node = (TreeNode*)calloc (1, sizeof (TreeNode)) ;
+    cpy_node->type = node->type;
+    cpy_node->value = node->value;
+    cpy_node->left = node->left;
+    cpy_node->right = node->right;
+
+    return cpy_node;
 }
 
 TreeNode* CreateNode (enum TYPES TYPE, int VALUE, TreeNode* left, TreeNode* right)
@@ -278,7 +262,7 @@ TreeNode* CreateNode (enum TYPES TYPE, int VALUE, TreeNode* left, TreeNode* righ
     return node;
 }
 
-TreeNode* d (Tree* tree, const TreeNode* node)
+TreeNode* d (const TreeNode* node)
 {
     if (node->type == NUM)
         return CreateNode (NUM, 0, NULL, NULL);
@@ -288,23 +272,29 @@ TreeNode* d (Tree* tree, const TreeNode* node)
     switch (node->value)
     {
         case OP_ADD:
-            return CreateNode (OP, OP_ADD, d (tree, node->left), d (tree, node->right));
+            return CreateNode (OP, OP_ADD, d (node->left), d (node->right));
         case OP_SUB:
-            return CreateNode (OP, OP_SUB, d (tree, node->left), d (tree, node->right));
+            return CreateNode (OP, OP_SUB, d (node->left), d (node->right));
         case OP_MUL:
-            return CreateNode (OP, OP_ADD, CreateNode (OP, OP_MUL, d (tree, node->left), c (tree, node->right)),
-                                           CreateNode (OP, OP_MUL, c (tree, node->left), d (tree, node->right)));
+            return CreateNode (OP, OP_ADD, CreateNode (OP, OP_MUL, d (node->left), c (node->right)),
+                                           CreateNode (OP, OP_MUL, c (node->left), d (node->right)));
         case OP_DIV:
             return CreateNode (OP, OP_DIV, CreateNode (OP, OP_SUB,
-                                                       CreateNode (OP, OP_MUL, d (tree, node->left), c (tree, node->right)),
-                                                       CreateNode (OP, OP_MUL, c (tree, node->left), d (tree, node->right))),
-                                           CreateNode (OP, OP_MUL, c (tree, node->right), c (tree, node->right)));
+                                                      CreateNode (OP, OP_MUL, d (node->left), c (node->right)),
+                                                      CreateNode (OP, OP_MUL, c (node->left), d (node->right))),
+                                           CreateNode (OP, OP_EXP, c (node->right), CreateNode (NUM, 2, NULL, NULL)));
         case OP_EXP:
-            return CreateNode (OP, OP_MUL, c (tree, node->right),
-                                           CreateNode (OP, OP_EXP, c (tree, node->left),
-                                                                   CreateNode (OP, OP_SUB, c (tree, node->right),
-                                                                                           CreateNode (NUM, 1, NULL, NULL))));
-
+        {
+            return CreateNode (OP, OP_MUL,
+                              c (node->right),
+                              CreateNode (OP, OP_MUL,
+                                         CreateNode (OP, OP_EXP,
+                                                    c (node->left),
+                                                    CreateNode (OP, OP_SUB,
+                                                               c (node->right),
+                                                               CreateNode (NUM, 1, NULL, NULL))),
+                                         d (node->left)));
+        }
     };
     return 0;
 }
@@ -397,4 +387,306 @@ void TreeBody (TreeNode* node, FILE* file)
 
     TreeBody (node->left, file);
     TreeBody (node->right, file);
+}
+
+void Simpler (TreeNode* node, enum PASS PASS)
+{
+    if (node->type == OP)
+    {
+        if (node->value == OP_ADD || node->value == OP_SUB) // не запускает с первым node
+        {
+            if (node->left->type == NUM && node->right->type == NUM)
+            {
+                node->value = Eval (node);
+                node->type = NUM;
+                node->left->value = EMPTY;
+                node->right->value = EMPTY;
+                node->left->type = EMPTY;
+                node->right->type = EMPTY;
+                free (node->left);
+                free (node->right);
+                node->left = NULL;
+                node->right = NULL;
+            }
+            else if (node->left->type == NUM && node->left->value == 0)
+            {
+                node->type = node->right->type;
+                node->value = node->right->value;
+                node->left = node->right->left;
+                node->right = node->right->right;
+            }
+            else if (node->right->type == NUM && node->right->value == 0)
+            {
+                node->type = node->left->type;
+                node->value = node->left->value;
+                node->right = node->left->right;
+                node->left = node->left->left;
+            }
+        }
+        else if (node->value == OP_MUL || node->value == OP_DIV) // сделать проверку на то сто знаменатель не ноль
+        {
+            if (node->left->type == NUM && node->right->type == NUM)
+            {
+                node->value = Eval (node);
+                node->type = NUM;
+                node->left->value = EMPTY;
+                node->right->value = EMPTY;
+                node->left->type = EMPTY;
+                node->right->type = EMPTY;
+                free (node->left);
+                free (node->right);
+                node->left = NULL;
+                node->right = NULL;
+            }
+            else if ((node->left->type == NUM && node->left->value == 0) ||
+                     (node->right->type == NUM && node->right->value == 0))
+            {
+                TreeDel (node->left);
+                TreeDel (node->right);
+                node->type = NUM;
+                node->value = 0;
+                node->left = NULL;
+                node->right = NULL;
+            }
+            else if (node->left->type == NUM && node->right->type != NUM)
+            {
+                if (node->left->value == 1)
+                {
+                    TreeDel (node->left);
+                    node->left = NULL;
+                    node->type = node->right->type;
+                    node->value = node->right->value;
+                    node->left = node->right->left;
+                    node->right = node->right->right;
+                }
+            }
+            else if (node->left->type != NUM && node->right->type == NUM)
+            {
+                if (node->right->value == 1)
+                {
+                    TreeDel (node->right);
+                    node->right = NULL;
+                    node->type = node->left->type;
+                    node->value = node->left->value;
+                    node->right = node->left->right;
+                    node->left = node->left->left;
+                }
+            }
+        }
+        else if (node->value == OP_EXP)
+        {
+            if (node->right->type == NUM && node->right->value == 0)
+            {
+                node->type = NUM;
+                node->value = 1;
+                node->left = NULL;
+                node->right = NULL;
+            }
+            else if (node->right->type == NUM && node->right->value == 1)
+            {
+                node->type = node->left->type;
+                node->value = node->left->value;
+                node->right = node->left->right;
+                node->left = node->left->left;
+            }
+        }
+    }
+    if (PASS == FIRST_PASS)
+    {
+        if (node->left != NULL)
+            Simpler (node->left, FIRST_PASS);
+        if (node->right != NULL)
+            Simpler (node->right, FIRST_PASS);
+        Simpler (node, SECOND_PASS);
+    }
+}
+
+void TreeDel (TreeNode* node)
+{
+    node->value = EMPTY;
+    node->type = EMPTY;
+    if (node->left != NULL)
+        TreeDel (node->left);
+    if (node->right != NULL)
+        TreeDel (node->right);
+    free (node);
+}
+
+void EvalLatex (TreeNode* node, FILE* latex_file)
+{
+    if (node->type == OP)
+    {
+        if (node->value == OP_ADD)
+        {
+            if (node->left->type == NUM)
+            {
+                fprintf (latex_file, "%d", node->left->value);
+            }
+            else if (node->left->type == VAR)
+            {
+                fprintf (latex_file, "x");
+            }
+            else
+            {
+                fprintf (latex_file, "(");
+                EvalLatex (node->left, latex_file);
+                fprintf (latex_file, ")");
+            }
+            fprintf (latex_file, "+");
+            if (node->right->type == NUM)
+            {
+                fprintf (latex_file, "%d", node->right->value);
+            }
+            else if (node->right->type == VAR)
+            {
+                fprintf (latex_file, "x");
+            }
+            else
+            {
+                fprintf (latex_file, "(");
+                EvalLatex (node->right, latex_file);
+                fprintf (latex_file, ")");
+            }
+        }
+        else if (node->value == OP_SUB)
+        {
+            if (node->left->type == NUM)
+            {
+                fprintf (latex_file, "%d", node->left->value);
+            }
+            else if (node->left->type == VAR)
+            {
+                fprintf (latex_file, "x");
+            }
+            else
+            {
+                fprintf (latex_file, "(");
+                EvalLatex (node->left, latex_file);
+                fprintf (latex_file, ")");
+            }
+            fprintf (latex_file, "-");
+            if (node->right->type == NUM)
+            {
+                fprintf (latex_file, "%d", node->right->value);
+            }
+            else if (node->right->type == VAR)
+            {
+                fprintf (latex_file, "x");
+            }
+            else
+            {
+                fprintf (latex_file, "(");
+                EvalLatex (node->right, latex_file);
+                fprintf (latex_file, ")");
+            }
+        }
+        else if (node->value == OP_MUL)
+        {
+            if (node->left->type == NUM)
+            {
+                fprintf (latex_file, "%d", node->left->value);
+            }
+            else if (node->left->type == VAR)
+            {
+                fprintf (latex_file, "x");
+            }
+            else
+            {
+                //fprintf (latex_file, "(");
+                EvalLatex (node->left, latex_file);
+                //fprintf (latex_file, ")");
+            }
+            fprintf (latex_file, " \\cdot ");
+            if (node->right->type == NUM)
+            {
+                fprintf (latex_file, "%d", node->right->value);
+            }
+            else if (node->right->type == VAR)
+            {
+                fprintf (latex_file, "x");
+            }
+            else
+            {
+                //fprintf (latex_file, "(");
+                EvalLatex (node->right, latex_file);
+                //fprintf (latex_file, ")");
+            }
+        }
+        else if (node->value == OP_DIV)
+        {
+            fprintf (latex_file, " \\frac{");
+            if (node->left->type == NUM)
+            {
+                fprintf (latex_file, "%d", node->left->value);
+            }
+            else if (node->left->type == VAR)
+            {
+                fprintf (latex_file, "x");
+            }
+            else
+            {
+                //fprintf (latex_file, "(");
+                EvalLatex (node->left, latex_file);
+                //fprintf (latex_file, ")");
+            }
+            fprintf (latex_file, "}{");
+            if (node->right->type == NUM)
+            {
+                fprintf (latex_file, "%d", node->right->value);
+            }
+            else if (node->right->type == VAR)
+            {
+                fprintf (latex_file, "x");
+            }
+            else
+            {
+                //fprintf (latex_file, "(");
+                EvalLatex (node->right, latex_file);
+                //fprintf (latex_file, ")");
+            }
+            fprintf (latex_file, "}");
+        }
+        else if (node->value == OP_EXP)
+        {
+            if (node->left->type == NUM)
+            {
+                fprintf (latex_file, "%d", node->left->value);
+            }
+            else if (node->left->type == VAR)
+            {
+                fprintf (latex_file, "x");
+            }
+            else
+            {
+                fprintf (latex_file, "(");
+                EvalLatex (node->left, latex_file);
+                fprintf (latex_file, ")");
+            }
+            fprintf (latex_file, "^");
+            fprintf (latex_file, "{");
+            if (node->right->type == NUM)
+            {
+                fprintf (latex_file, "%d", node->right->value);
+            }
+            else if (node->left->type == VAR)
+            {
+                fprintf (latex_file, "x");
+            }
+            else
+            {
+                fprintf (latex_file, "(");
+                EvalLatex (node->right, latex_file);
+                fprintf (latex_file, ")");
+            }
+            fprintf (latex_file, "}");
+        }
+    }
+    else if (node->type == NUM)
+    {
+        fprintf (latex_file, "%d", node->value);
+    }
+    else if (node->type == VAR)
+    {
+        fprintf (latex_file, "x");
+    }
 }
