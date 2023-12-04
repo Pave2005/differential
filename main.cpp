@@ -14,14 +14,15 @@ int main ()
     EvalLatex (tree.root, latex_file);
     fprintf (latex_file, "=");
 
-    tree.root = d (tree.root);
+    TreeNode* dif_root = d (tree.root);
+    TreeDel (tree.root);
 
-    Simpler (tree.root, FIRST_PASS);
-    EvalLatex (tree.root, latex_file);
+    Simpler (dif_root, FIRST_PASS);
+    EvalLatex (dif_root, latex_file);
     fclose (latex_file);
-    EvalDump (&tree, tree.root, CALCULATED);
+    EvalDump (&tree, dif_root, CALCULATED);
 
-    PrintfNode (tree.root, &tree);
+    PrintfNode (dif_root, &tree);
 
-    //EvalDtor (&tree, tree.root);
+    EvalDtor (&tree, dif_root);
 }

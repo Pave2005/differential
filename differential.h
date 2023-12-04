@@ -1,6 +1,12 @@
 #ifndef DIF
 #define DIF
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <assert.h>
+
 const int EMPTY = -888;
 
 struct TreeNode

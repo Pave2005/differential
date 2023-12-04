@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
 #include "differential.h"
 
 long FileSize (FILE* file)
@@ -243,11 +239,20 @@ void Insert (TreeNode** node, char* answer)
 
 TreeNode* c (TreeNode* node)
 {
-    TreeNode* cpy_node = (TreeNode*)calloc (1, sizeof (TreeNode)) ;
+    TreeNode* cpy_node = (TreeNode*)calloc (1, sizeof (TreeNode));
+
     cpy_node->type = node->type;
     cpy_node->value = node->value;
-    cpy_node->left = node->left;
-    cpy_node->right = node->right;
+
+    if (node->left == NULL)
+        cpy_node->left = NULL;
+    else
+        cpy_node->left = c (node->left);
+
+    if (node->right == NULL)
+        cpy_node->right = NULL;
+    else
+        cpy_node->right = c (node->right);
 
     return cpy_node;
 }
@@ -337,33 +342,33 @@ void TreeBody (TreeNode* node, FILE* file)
     {
         if (node->value == OP_MUL)
         {
-            fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue "
+            fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = aqua "
                            " label = \" * \"];\n",node);
         }
         else if (node->value == OP_DIV)
         {
-            fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue "
+            fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = aqua "
                            " label = \" / \"];\n",node);
         }
         else if (node->value == OP_SUB)
         {
-            fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue "
+            fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = aqua "
                            " label = \" - \"];\n",node);
         }
         else if (node->value == OP_ADD)
         {
-            fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue "
+            fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = aqua "
                            " label = \" + \"];\n",node);
         }
         else if (node->value == OP_EXP)
         {
-            fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue "
+            fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = aqua "
                            " label = \" ^ \"];\n",node);
         }
     }
     else if (node->type == VAR)
     {
-        fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue "
+        fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = lightblue2 "
                        " label = \" x \"];\n",node);
     }
 
@@ -393,34 +398,40 @@ void Simpler (TreeNode* node, enum PASS PASS)
 {
     if (node->type == OP)
     {
-        if (node->value == OP_ADD || node->value == OP_SUB) // не запускает с первым node
+        if (node->value == OP_ADD || node->value == OP_SUB)
         {
             if (node->left->type == NUM && node->right->type == NUM)
             {
                 node->value = Eval (node);
                 node->type = NUM;
-                node->left->value = EMPTY;
-                node->right->value = EMPTY;
-                node->left->type = EMPTY;
-                node->right->type = EMPTY;
-                free (node->left);
-                free (node->right);
+                TreeDel (node->left);
+                TreeDel (node->right);
                 node->left = NULL;
                 node->right = NULL;
             }
             else if (node->left->type == NUM && node->left->value == 0)
             {
+                TreeDel (node->left); // не уверен
                 node->type = node->right->type;
                 node->value = node->right->value;
                 node->left = node->right->left;
-                node->right = node->right->right;
+
+                TreeNode* tmp_right = node->right->right;
+                free (node->right);
+                node->right = tmp_right;
+
             }
             else if (node->right->type == NUM && node->right->value == 0)
             {
+                TreeDel (node->right); // тоже не уверен
                 node->type = node->left->type;
                 node->value = node->left->value;
                 node->right = node->left->right;
-                node->left = node->left->left;
+
+                TreeNode* tmp_left = node->left->left;
+                free (node->left);
+                node->left = tmp_left;
+
             }
         }
         else if (node->value == OP_MUL || node->value == OP_DIV) // сделать проверку на то сто знаменатель не ноль
@@ -429,12 +440,8 @@ void Simpler (TreeNode* node, enum PASS PASS)
             {
                 node->value = Eval (node);
                 node->type = NUM;
-                node->left->value = EMPTY;
-                node->right->value = EMPTY;
-                node->left->type = EMPTY;
-                node->right->type = EMPTY;
-                free (node->left);
-                free (node->right);
+                TreeDel (node->left);
+                TreeDel (node->right);
                 node->left = NULL;
                 node->right = NULL;
             }
@@ -457,7 +464,10 @@ void Simpler (TreeNode* node, enum PASS PASS)
                     node->type = node->right->type;
                     node->value = node->right->value;
                     node->left = node->right->left;
-                    node->right = node->right->right;
+
+                    TreeNode* tmp_right = node->right->right;
+                    free (node->right);
+                    node->right = tmp_right;
                 }
             }
             else if (node->left->type != NUM && node->right->type == NUM)
@@ -469,7 +479,10 @@ void Simpler (TreeNode* node, enum PASS PASS)
                     node->type = node->left->type;
                     node->value = node->left->value;
                     node->right = node->left->right;
-                    node->left = node->left->left;
+
+                    TreeNode* tmp_left = node->left->left;
+                    free (node->left);
+                    node->left = tmp_left;
                 }
             }
         }
@@ -477,6 +490,8 @@ void Simpler (TreeNode* node, enum PASS PASS)
         {
             if (node->right->type == NUM && node->right->value == 0)
             {
+                TreeDel (node->right);
+                TreeDel (node->left);
                 node->type = NUM;
                 node->value = 1;
                 node->left = NULL;
@@ -484,10 +499,31 @@ void Simpler (TreeNode* node, enum PASS PASS)
             }
             else if (node->right->type == NUM && node->right->value == 1)
             {
+                TreeDel (node->right);
                 node->type = node->left->type;
                 node->value = node->left->value;
                 node->right = node->left->right;
-                node->left = node->left->left;
+
+                TreeNode* tmp_left = node->left->left;
+                free (node->left);
+                node->left = tmp_left;
+            }
+
+
+            else if (node->left->type == OP && node->left->value == OP_EXP)
+            {
+                if (node->right->type == NUM && node->left->right->type == NUM)
+                {
+                    node->left->right->value = node->left->right->value * node->right->value;
+                    free (node->right);
+                    node->type = node->left->type;
+                    node->value = node->left->value;
+                    node->right = node->left->right;
+
+                    TreeNode* tmp_left = node->left->left;
+                    free (node->left);
+                    node->left = tmp_left;
+                }
             }
         }
     }
@@ -503,13 +539,12 @@ void Simpler (TreeNode* node, enum PASS PASS)
 
 void TreeDel (TreeNode* node)
 {
-    node->value = EMPTY;
-    node->type = EMPTY;
-    if (node->left != NULL)
+    if (node != NULL)
+    {
         TreeDel (node->left);
-    if (node->right != NULL)
         TreeDel (node->right);
-    free (node);
+        free (node);
+    }
 }
 
 void EvalLatex (TreeNode* node, FILE* latex_file)
@@ -528,9 +563,11 @@ void EvalLatex (TreeNode* node, FILE* latex_file)
             }
             else
             {
-                fprintf (latex_file, "(");
+                if (node->left->value != OP_MUL && node->left->value != OP_DIV)
+                    fprintf (latex_file, "(");
                 EvalLatex (node->left, latex_file);
-                fprintf (latex_file, ")");
+                if (node->left->value != OP_MUL && node->left->value != OP_DIV)
+                    fprintf (latex_file, ")");
             }
             fprintf (latex_file, "+");
             if (node->right->type == NUM)
@@ -543,9 +580,11 @@ void EvalLatex (TreeNode* node, FILE* latex_file)
             }
             else
             {
-                fprintf (latex_file, "(");
+                if (node->right->value != OP_MUL && node->right->value != OP_DIV)
+                    fprintf (latex_file, "(");
                 EvalLatex (node->right, latex_file);
-                fprintf (latex_file, ")");
+                if (node->right->value != OP_MUL && node->right->value != OP_DIV)
+                    fprintf (latex_file, ")");
             }
         }
         else if (node->value == OP_SUB)
@@ -560,9 +599,11 @@ void EvalLatex (TreeNode* node, FILE* latex_file)
             }
             else
             {
-                fprintf (latex_file, "(");
+                if (node->left->value != OP_MUL && node->left->value != OP_DIV)
+                    fprintf (latex_file, "(");
                 EvalLatex (node->left, latex_file);
-                fprintf (latex_file, ")");
+                if (node->left->value != OP_MUL && node->left->value != OP_DIV)
+                    fprintf (latex_file, ")");
             }
             fprintf (latex_file, "-");
             if (node->right->type == NUM)
@@ -575,9 +616,11 @@ void EvalLatex (TreeNode* node, FILE* latex_file)
             }
             else
             {
-                fprintf (latex_file, "(");
+                if (node->right->value != OP_MUL && node->right->value != OP_DIV)
+                    fprintf (latex_file, "(");
                 EvalLatex (node->right, latex_file);
-                fprintf (latex_file, ")");
+                if (node->right->value != OP_MUL && node->right->value != OP_DIV)
+                    fprintf (latex_file, ")");
             }
         }
         else if (node->value == OP_MUL)
@@ -592,11 +635,15 @@ void EvalLatex (TreeNode* node, FILE* latex_file)
             }
             else
             {
-                //fprintf (latex_file, "(");
+                if (node->left->value != OP_MUL && node->left->value != OP_EXP)
+                    fprintf (latex_file, "(");
                 EvalLatex (node->left, latex_file);
-                //fprintf (latex_file, ")");
+                if (node->left->value != OP_MUL && node->left->value != OP_EXP)
+                    fprintf (latex_file, ")");
             }
-            fprintf (latex_file, " \\cdot ");
+            if (node->left->type != NUM || (node->right->type != VAR &&
+               ((node->right->type != OP || node->right->value != OP_EXP) || node->right->left->type != VAR)))
+                fprintf (latex_file, " \\cdot ");
             if (node->right->type == NUM)
             {
                 fprintf (latex_file, "%d", node->right->value);
@@ -607,9 +654,11 @@ void EvalLatex (TreeNode* node, FILE* latex_file)
             }
             else
             {
-                //fprintf (latex_file, "(");
+                if (node->right->value != OP_MUL && node->right->value != OP_EXP)
+                    fprintf (latex_file, "(");
                 EvalLatex (node->right, latex_file);
-                //fprintf (latex_file, ")");
+                if (node->right->value != OP_MUL && node->right->value != OP_EXP)
+                    fprintf (latex_file, ")");
             }
         }
         else if (node->value == OP_DIV)
@@ -625,9 +674,7 @@ void EvalLatex (TreeNode* node, FILE* latex_file)
             }
             else
             {
-                //fprintf (latex_file, "(");
                 EvalLatex (node->left, latex_file);
-                //fprintf (latex_file, ")");
             }
             fprintf (latex_file, "}{");
             if (node->right->type == NUM)
@@ -640,9 +687,7 @@ void EvalLatex (TreeNode* node, FILE* latex_file)
             }
             else
             {
-                //fprintf (latex_file, "(");
                 EvalLatex (node->right, latex_file);
-                //fprintf (latex_file, ")");
             }
             fprintf (latex_file, "}");
         }
