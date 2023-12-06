@@ -1,24 +1,11 @@
 digraph G { 
 node [shape = record];
- 11630057700  11630057700 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " / "];
-11630057700 -> 11630057140
- 11630057700 -> 11630056360 
- 11630057140 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " ^ "];
-11630057140 -> 11630057500
- 11630057140 -> 11630056320 
- 11630057500 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " + "];
-11630057500 -> 11630057540
- 11630057500 -> 11630056260 
- 11630057540 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " * "];
-11630057540 -> 11630057300
- 11630057540 -> 11630057340 
- 11630057300 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 2 "];
- 11630057340 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " x "];
- 11630056260 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 5 "];
- 11630056320 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 2 "];
- 11630056360 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " ^ "];
-11630056360 -> 11630056420
- 11630056360 -> 11630056460 
- 11630056420 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " x "];
- 11630056460 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 3 "];
+ 11540040340  11540040340 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " ln "];
+
+ 11540040340 -> 11540040300 
+ 11540040300 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " + "];
+11540040300 -> 11540040200
+ 11540040300 -> 11540040240 
+ 11540040200 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 1.000000 "];
+ 11540040240 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " x "];
 }

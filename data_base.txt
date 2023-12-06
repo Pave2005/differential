@@ -1,1 +1,1 @@
- (  div  (  sub  (  mul  (  mul  (  2  nil  nil  )  (  mul  (  add  (  mul  (  2  nil  nil  )  (  x  nil  nil  )  )  (  5  nil  nil  )  )  (  2  nil  nil  )  )  )  (  exp  (  x  nil  nil  )  (  3  nil  nil  )  )  )  (  mul  (  exp  (  add  (  mul  (  2  nil  nil  )  (  x  nil  nil  )  )  (  5  nil  nil  )  )  (  2  nil  nil  )  )  (  mul  (  3  nil  nil  )  (  exp  (  x  nil  nil  )  (  2  nil  nil  )  )  )  )  )  (  exp  (  x  nil  nil  )  (  6  nil  nil  )  )  ) 
+ln(1+x)
