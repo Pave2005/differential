@@ -28,6 +28,7 @@ struct Tree
 {
     TreeNode* root;
 
+    // ??
     FILE* file;
     int counter;
 };
@@ -43,11 +44,11 @@ enum OPERATORS
 
 enum FUNCTIONS
 {
-    SIN = 1,
-    COS = 2,
-    LN = 3,
-    TAN = 4,
-    COT = 5,
+    SIN = 6,
+    COS = 7,
+    LN = 8,
+    TAN = 9,
+    COT = 10,
 };
 
 enum TYPES
@@ -70,30 +71,29 @@ enum PASS
     SECOND_PASS = 2,
 };
 
-TreeNode* GetExp (Position* data);
-TreeNode* GetG (const char* str, Position* data);
-TreeNode* GetN (Position* data);
-TreeNode* GetT (Position* data);
-TreeNode* GetE (Position* data);
-TreeNode* GetP (Position* data);
-TreeNode* GetId (Position* data);
-
+void TextFuncName (TreeNode* node, FILE* file, char* func_name);
+char* GetFuncName (int func);
+char GetOpChar (int command);
 void Substitute (TreeNode* node, const float value);
 float EvalExpression (TreeNode* node, const float value);
 char* EvalCtor (Tree* tree);
 void EvalDtor (Tree* tree, TreeNode* node);
-TreeNode* c (const TreeNode* node);
-long FileSize (FILE* file);
-char* ReadText (long file_size, FILE* file);
+TreeNode* CopyTree (TreeNode* node);
 float EvalNumExpression(TreeNode* node);
-TreeNode* CreateNode (enum TYPES TYPE, int VALUE, TreeNode* left, TreeNode* right);
-TreeNode* d (const TreeNode* node);
-void EvalDump (TreeNode* node, enum EXPRESSION EXPRESSION);
-void TreeBody (TreeNode* node, FILE* file);
+TreeNode* CreateNode (enum TYPES node_type, int node_value, TreeNode* left, TreeNode* right);
+TreeNode* DiffTree (const TreeNode* node);
+void EvalDump (TreeNode* node, enum EXPRESSION cmd_expression);
+void DumpTreeNode (TreeNode* node, FILE* file);
 void TreeDel (TreeNode* node);
-// pass
-void Optimizer (TreeNode* node, enum PASS PASS);
+void OptimiseExpressionTree (TreeNode* node, enum PASS pass);
 void EvalLatex (TreeNode* node, FILE* latex_file);
+void OptimiseNumTreeNode (TreeNode* node);
+void OptimiseAndDelSubTree (TreeNode* node_parent, TreeNode* sub_node);
+void OptimiseSpecialCases (TreeNode* node, float value);
+void LatexOp (TreeNode* node, FILE* latex_file);
+void PutBracketsBefore (TreeNode* node, FILE* latex_file, char bracket_type);
+void PutBracketsAfter (TreeNode* node, FILE* latex_file, char bracket_type);
+void PutOp (TreeNode* node, FILE* latex_file);
 
 int Factorial (const int num);
 TreeNode* Taylor (const TreeNode* node, const int order);

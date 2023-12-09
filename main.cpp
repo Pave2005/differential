@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include "differential.h"
+#include "recursive_descent.h"
+#include "file_reader.h"
 
 int main ()
 {
@@ -15,11 +17,11 @@ int main ()
     fprintf (latex_file, "=");
 
 
-    //TreeNode* dif_root = d (tree.root);
-    TreeNode* dif_root = Taylor (tree.root, 3);
+    //TreeNode* dif_root = DiffTree (tree.root);
+    TreeNode* dif_root = Taylor (tree.root, 7);
     TreeDel (tree.root);
 
-    Optimizer (dif_root, FIRST_PASS);
+    OptimiseExpressionTree (dif_root, FIRST_PASS);
 
     EvalLatex (dif_root, latex_file);
     fclose (latex_file);
