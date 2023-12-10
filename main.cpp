@@ -6,27 +6,28 @@
 int main ()
 {
     Tree tree = {};
+    FILE* file = fopen ("data_base.txt", "r");
     Position data = {};
 
-    char* data_buf = EvalCtor (&tree);
+    char* data_buf = TreeCtor (&tree, file);
     tree.root = GetG (data_buf, &data);
-    EvalDump (tree.root, ORIGINAL);
+    ExpressionTreeDump (tree.root, ORIGINAL);
 
     FILE* latex_file = fopen ("eval.tex", "w");
-    EvalLatex (tree.root, latex_file);
+    PrintLatex (tree.root, latex_file);
     fprintf (latex_file, "=");
 
 
     //TreeNode* dif_root = DiffTree (tree.root);
-    TreeNode* dif_root = Taylor (tree.root, 7);
+    TreeNode* dif_root = Taylor (tree.root, 3);
     TreeDel (tree.root);
 
     OptimiseExpressionTree (dif_root, FIRST_PASS);
 
-    EvalLatex (dif_root, latex_file);
+    PrintLatex (dif_root, latex_file);
     fclose (latex_file);
 
-    EvalDump (dif_root, CALCULATED);
+    ExpressionTreeDump (dif_root, CALCULATED);
 
-    EvalDtor (&tree, dif_root);
+    TreeDtor (&tree, file, dif_root);
 }

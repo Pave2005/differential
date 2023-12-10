@@ -1,1 +1,1 @@
-ln(1+sin(2*x*cos(x)))
+ln(1+sin(x))

@@ -33,12 +33,12 @@ TreeNode* GetT (Position* data)
         {
             case '*':
             {
-                val = CreateNode (OP, OP_MUL, val, val2);
+                val = NewNode (OP, OP_MUL, val, val2);
                 break;
             }
             case '/':
             {
-                val = CreateNode (OP, OP_DIV, val, val2);
+                val = NewNode (OP, OP_DIV, val, val2);
                 break;
             }
         }
@@ -58,12 +58,12 @@ TreeNode* GetE (Position* data)
         {
             case '+':
             {
-                val = CreateNode (OP, OP_ADD, val, val2);
+                val = NewNode (OP, OP_ADD, val, val2);
                 break;
             }
             case '-':
             {
-                val = CreateNode (OP, OP_SUB, val, val2);
+                val = NewNode (OP, OP_SUB, val, val2);
                 break;
             }
         }
@@ -88,7 +88,7 @@ TreeNode* GetN (Position* data)
         val = val * 10 + data->str[data->position] - '0';
         data->position++;
     }
-    return CreateNode (NUM, val, NULL, NULL);
+    return NewNode (NUM, val, NULL, NULL);
 }
 
 TreeNode* GetId (Position* data)
@@ -107,7 +107,7 @@ TreeNode* GetId (Position* data)
         data->position++;
         val = GetE (data);
         data->position++;
-        return CreateNode (FUNC, SIN, NULL, val);
+        return NewNode (FUNC, SIN, NULL, val);
     }
     else if (strcmp ("cos", arg) == 0 && data->str[data->position] == '(')
     {
@@ -115,7 +115,7 @@ TreeNode* GetId (Position* data)
         data->position++;
         val = GetE (data);
         data->position++;
-        return CreateNode (FUNC, COS, NULL, val);
+        return NewNode (FUNC, COS, NULL, val);
     }
     else if (strcmp ("tg", arg) == 0 && data->str[data->position] == '(')
     {
@@ -123,7 +123,7 @@ TreeNode* GetId (Position* data)
         data->position++;
         val = GetE (data);
         data->position++;
-        return CreateNode (FUNC, TAN, NULL, val);
+        return NewNode (FUNC, TAN, NULL, val);
     }
     else if (strcmp ("ctg", arg) == 0 && data->str[data->position] == '(')
     {
@@ -131,7 +131,7 @@ TreeNode* GetId (Position* data)
         data->position++;
         val = GetE (data);
         data->position++;
-        return CreateNode (FUNC, COT, NULL, val);
+        return NewNode (FUNC, COT, NULL, val);
     }
     else if (strcmp ("ln", arg) == 0 && data->str[data->position] == '(')
     {
@@ -139,9 +139,9 @@ TreeNode* GetId (Position* data)
         data->position++;
         val = GetE (data);
         data->position++;
-        return CreateNode (FUNC, LN, NULL, val);
+        return NewNode (FUNC, LN, NULL, val);
     }
-    return CreateNode (VAR, 0, NULL, NULL);
+    return NewNode (VAR, 0, NULL, NULL);
 }
 
 TreeNode* GetExp (Position* data)
@@ -151,7 +151,7 @@ TreeNode* GetExp (Position* data)
     {
         data->position++;
         TreeNode* val2 = GetP (data);
-        val = CreateNode (OP, OP_EXP, val, val2);
+        val = NewNode (OP, OP_EXP, val, val2);
     }
     return val;
 }

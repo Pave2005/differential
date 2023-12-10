@@ -1,7 +1,7 @@
 #include "file_reader.h"
 #include "differential.h"
 
-char* EvalCtor (Tree* tree)
+char* TreeCtor (Tree* tree, FILE* file)
 {
     tree->root = (TreeNode*)calloc (1, sizeof (TreeNode));
     tree->root->value = EMPTY;
@@ -9,36 +9,31 @@ char* EvalCtor (Tree* tree)
     tree->root->right = NULL;
     tree->root->type = EMPTY;
 
-    tree->counter = 0;
-
-    tree->file = fopen ("data_base.txt", "r");
-    long file_size = FileSize (tree->file);
-    char* tmp_buf = ReadText (file_size, tree->file);
-    fclose (tree->file);
-    tree->file = fopen ("data_base.txt", "w");
+    long file_size = FileSize (file);
+    char* tmp_buf = ReadText (file_size, file);
+    fclose (file);
+    file = fopen ("data_base.txt", "w");
     return tmp_buf;
 }
 
-void EvalDtor (Tree* tree, TreeNode* node)
+void TreeDtor (Tree* tree, FILE* file, TreeNode* node)
 {
-    // static is_file_closed = 0;
-    if (tree->counter == 0)
+    static int is_file_closed = 0;
+    if (is_file_closed == 0)
     {
-        fclose (tree->file);
-        // is_file_closed = 1;
-        tree->counter++;
+        fclose (file);
+        is_file_closed = 1;
     }
+
     if (node != NULL)
     {
-        EvalDtor (tree, node->left);
-        EvalDtor (tree, node->right);
+        TreeDtor (tree, file, node->left);
+        TreeDtor (tree, file, node->right);
         free (node);
-        tree->counter = 0;
     }
 }
 
-// SubstitutePoint
-void Substitute (TreeNode* node, const float value)
+void SubstitutePoint (TreeNode* node, const float value)
 {
     if (node == NULL)
         return;
@@ -50,65 +45,71 @@ void Substitute (TreeNode* node, const float value)
     }
     else
     {
-        Substitute (node->left, value);
-        Substitute (node->right, value);
+        SubstitutePoint (node->left, value);
+        SubstitutePoint (node->right, value);
     }
 }
 
 float EvalExpression (TreeNode* node, const float value)
 {
-    Substitute (node, value);
+    SubstitutePoint (node, value);
     return EvalNumExpression (node);
 }
 
-float EvalNumExpression (TreeNode* node)
+float EvalBinaryOp (TreeNode* node)
 {
-    if (node->type == NUM)
-    {
-        return (float)node->value;
-    }
-    float right = EvalNumExpression (node->right);
-    // EvalUnaryOp
-    // EvalBinaryOp
-    if (node->type == FUNC)
-    {
-        switch ((int)node->value)
-        {
-            case SIN:
-                return sin (right);
-            case COS:
-                return cos (right);
-            case TAN:
-                return tan (right);
-            case COT:
-                return 1 / tan (right);
-            case LN:
-                return log (right);
-                // default
-        };
-    }
-    float left = EvalNumExpression (node->left);
+    float right_num = EvalNumExpression (node->right);
+    float left_num = EvalNumExpression (node->left);
 
     switch ((int)node->value)
     {
         case OP_DIV:
-            return left / right;
+            return left_num / right_num;
         case OP_SUB:
-            return left - right;
+            return left_num - right_num;
         case OP_MUL:
-            return left * right;
+            return left_num * right_num;
         case OP_ADD:
-            return left + right;
+            return left_num + right_num;
         case OP_EXP:
-        {
-            return pow (left, right);
-        }
+            return pow (left_num, right_num);
     }
     return 0;
 }
 
-// ReadDatabase
-// PrintNode
+float EvalUnaryOp (TreeNode* node)
+{
+    float num = EvalNumExpression (node->right);
+    switch ((int)node->value)
+    {
+        case SIN:
+            return sin (num);
+        case COS:
+            return cos (num);
+        case TAN:
+            return tan (num);
+        case COT:
+            return 1 / tan (num);
+        case LN:
+            return log (num);
+    };
+    return 0;
+}
+
+float EvalNumExpression (TreeNode* node)
+{
+    switch (node->type)
+    {
+        case NUM:
+            return (float)node->value;
+        case FUNC:
+            return EvalUnaryOp (node);
+        case OP:
+            return EvalBinaryOp (node);
+    };
+    return 0;
+}
+
 TreeNode* CopyTree (TreeNode* node)
 {
     TreeNode* cpy_node = (TreeNode*)calloc (1, sizeof (TreeNode));
@@ -129,10 +130,7 @@ TreeNode* CopyTree (TreeNode* node)
     return cpy_node;
 }
 
-// TreeNide* array = new TreeNode {left, right};
-
-// NewNode
-TreeNode* CreateNode (enum TYPES node_type, int node_value, TreeNode* left, TreeNode* right)
+TreeNode* NewNode (enum TYPES node_type, int node_value, TreeNode* left, TreeNode* right)
 {
     TreeNode* node = (TreeNode*)calloc (1, sizeof (TreeNode));
     node->type = node_type;
@@ -142,120 +140,109 @@ TreeNode* CreateNode (enum TYPES node_type, int node_value, TreeNode* left, Tree
     return node;
 }
 
-TreeNode* DiffTree (const TreeNode* node)
+TreeNode* DiffUnaryOp (int value, TreeNode* expr)
 {
-    if (node->type == NUM || (node->type == FUNC && node->right->type == NUM))
-        return CreateNode (NUM, 0, NULL, NULL);
-    if (node->type == VAR)
-        return CreateNode (NUM, 1, NULL, NULL);
-    if (node->type == FUNC)
+    switch (value)
     {
-        switch ((int)node->value)
-        {
-            case SIN: // сделать унарный минус
-                return CreateNode (OP, OP_MUL, DiffTree (node->right), CreateNode (FUNC, COS, NULL, CopyTree (node->right)));
-            case COS:
-                return CreateNode (OP, OP_MUL, CreateNode (OP, OP_MUL, CreateNode (NUM, -1, NULL, NULL), DiffTree (node->right)), CreateNode (FUNC, SIN, NULL, CopyTree (node->right)));
-            case TAN:
-                return CreateNode (OP, OP_MUL, DiffTree (node->right), CreateNode (OP, OP_DIV, CreateNode (NUM, 1, NULL, NULL), CreateNode (OP, OP_EXP, CreateNode (FUNC, COS, NULL, CopyTree (node->right)), CreateNode (NUM, 2, NULL, NULL))));
-            case COT:
-                return CreateNode (OP, OP_MUL, CreateNode (OP, OP_MUL, CreateNode (NUM, -1, NULL, NULL), DiffTree (node->right)), CreateNode (OP, OP_DIV, CreateNode (NUM, 1, NULL, NULL), CreateNode (OP, OP_EXP, CreateNode (FUNC, SIN, NULL, CopyTree (node->right)), CreateNode (NUM, 2, NULL, NULL))));
-            case LN:
-                return CreateNode (OP, OP_MUL, DiffTree (node->right), CreateNode (OP, OP_DIV, CreateNode (NUM, 1, NULL, NULL), CopyTree (node->right)));
-        };
-    }
-
-    switch ((int)node->value)
-    {
-        // #define ADD(expr1, expr2) CreateNode(OP, OP_ADD, expr1, expr2)
-        case OP_ADD:
-            return CreateNode (OP, OP_ADD, DiffTree (node->left), DiffTree (node->right));
-        case OP_SUB:
-            return CreateNode (OP, OP_SUB, DiffTree (node->left), DiffTree (node->right));
-        case OP_MUL:
-            return CreateNode (OP, OP_ADD, CreateNode (OP, OP_MUL, DiffTree (node->left), CopyTree (node->right)),
-                                           CreateNode (OP, OP_MUL, CopyTree (node->left), DiffTree (node->right)));
-        case OP_DIV:
-            // D(f(x) / g(x)) = D(f(x))*g(x) - ...
-            return CreateNode (OP, OP_DIV, CreateNode (OP, OP_SUB,
-                                                      CreateNode (OP, OP_MUL, DiffTree (node->left), CopyTree (node->right)),
-                                                      CreateNode (OP, OP_MUL, CopyTree (node->left), DiffTree (node->right))),
-                                           CreateNode (OP, OP_EXP, CopyTree (node->right), CreateNode (NUM, 2, NULL, NULL)));
-        case OP_EXP:
-        {
-            return CreateNode (OP, OP_MUL,
-                              CopyTree (node->right),
-                              CreateNode (OP, OP_MUL,
-                                         CreateNode (OP, OP_EXP,
-                                                    CopyTree (node->left),
-                                                    CreateNode (OP, OP_SUB,
-                                                               CopyTree (node->right),
-                                                               CreateNode (NUM, 1, NULL, NULL))),
-                                         DiffTree (node->left)));
-        }
+        case SIN:
+            return SIN(expr);
+        case COS:
+            return COS(expr);
+        case TAN:
+            return TAN(expr);
+        case COT:
+            return COT(expr);
+        case LN:
+            return LN(expr);
     };
     return 0;
 }
 
+TreeNode* DiffBinaryOp (int value, TreeNode* expr1, TreeNode* expr2)
+{
+    switch (value)
+    {
+        case OP_ADD:
+            return ADD(expr1, expr2);
+        case OP_SUB:
+            return SUB(expr1, expr2);
+        case OP_MUL:
+            return MUL(expr1, expr2);
+        case OP_DIV:
+            return DIV(expr1, expr2);
+        case OP_EXP:
+            return EXP(expr1, expr2);
+    };
+    return 0;
+}
+
+TreeNode* DiffTree (const TreeNode* node)
+{
+    if (node->type == NUM || (node->type == FUNC && node->right->type == NUM))
+        return NewNode (NUM, 0, NULL, NULL);
+    if (node->type == VAR)
+        return NewNode (NUM, 1, NULL, NULL);
+    if (node->type == FUNC)
+    {
+        return DiffUnaryOp ((int)node->value, node->right);
+    }
+    return DiffBinaryOp ((int)node->value, node->left, node->right);
+}
+
 TreeNode* Taylor (const TreeNode* node, const int order)
 {
+    TreeNode* tmp_func = CopyTree ((TreeNode*)node);
+
     if (order == 0)
     {
-        TreeNode* tmp_func = CopyTree ((TreeNode*)node);
-        return CreateNode (NUM, EvalExpression (tmp_func, 0), NULL, NULL);
+        TreeNode* taylor_tree = NewNode (NUM, EvalExpression (tmp_func, 0), NULL, NULL);
+        TreeDel (tmp_func);
+        return taylor_tree;
     }
 
-    TreeNode* taylor_tree = CreateNode (OP, OP_ADD,
-                                  CreateNode (NUM, CompWithZeroArg (node, 0), NULL, NULL),
-                                  CompSum (node, order));
+    TreeNode* taylor_tree =  NewNode (OP, OP_ADD,
+                                     NewNode (NUM, EvalExpression (tmp_func, 0), NULL, NULL),
+                                     GetPartialSum (node, order));
+    TreeDel (tmp_func);
     return taylor_tree;
 }
 
-// from 1 to n series member
-// GetPartialSum()
-TreeNode* CompSum (const TreeNode* node, const int order)
+TreeNode* GetPartialSum (const TreeNode* node, const int order)
 {
     TreeNode* left_sum = NULL;
 
     for (int i = 0; i < order; i++)
     {
         if (left_sum == NULL)
-            left_sum = Component (node, i + 1);
+            left_sum = GetSeriesMember (node, i + 1);
         else
         {
-            left_sum = CreateNode (OP, OP_ADD, CopyTree (left_sum), Component (node, i + 1));
+            left_sum = NewNode (OP, OP_ADD, CopyTree (left_sum), GetSeriesMember (node, i + 1));
         }
     }
 
     return left_sum;
 }
 
-// GetSeriesMember
-TreeNode* Component (const TreeNode* node, const int order)
-{
-    // F'(n) (0)
-
-    return CreateNode (OP, OP_MUL,
-                       CreateNode (OP, OP_DIV,
-                                   CreateNode (NUM, CompWithZeroArg (node, order), NULL, NULL),
-                                   CreateNode (NUM, Factorial (order), NULL, NULL)),
-                       CreateNode (OP, OP_EXP,
-                                   CreateNode (VAR, 0, NULL, NULL),
-                                   CreateNode (NUM, order, NULL, NULL)));
-}
-
-float CompWithZeroArg (const TreeNode* node, const int order)
+TreeNode* GetSeriesMember (const TreeNode* node, const int order)
 {
     TreeNode* tmp_diff = CopyTree ((TreeNode*)node);
     TreeNode* tmp_tree = NULL;
     for (int i = 0; i < order; i++)
     {
-        tmp_tree = tmp_diff; // for free
+        tmp_tree = tmp_diff;
         tmp_diff = DiffTree (tmp_diff);
         if (tmp_tree != node)
             TreeDel (tmp_tree);
     }
-    return EvalExpression (tmp_diff, 0);
+
+    return NewNode (OP, OP_MUL,
+                       NewNode (OP, OP_DIV,
+                                   NewNode (NUM, EvalExpression (tmp_diff, 0), NULL, NULL),
+                                   NewNode (NUM, Factorial (order), NULL, NULL)),
+                       NewNode (OP, OP_EXP,
+                                   NewNode (VAR, 0, NULL, NULL),
+                                   NewNode (NUM, order, NULL, NULL)));
 }
 
 int Factorial (const int num)
@@ -263,10 +250,15 @@ int Factorial (const int num)
     if (num == 0)
         return 1;
 
-    return num * Factorial (num - 1);
+    int value = 1;
+
+    for (int i = 1; i <= num; i++)
+        value *= i;
+
+    return value;
 }
 
-void EvalDump (TreeNode* node, enum EXPRESSION cmd_expression)
+void ExpressionTreeDump (TreeNode* node, enum EXPRESSION cmd_expression)
 {
     FILE* file = NULL;
     if (cmd_expression == ORIGINAL)
@@ -309,6 +301,8 @@ char GetOpChar (int command)
         case OP_EXP:
             return '^';
     };
+
+    return 0;
 }
 
 char* GetFuncName (int func)
@@ -325,7 +319,9 @@ char* GetFuncName (int func)
             return "ctg";
         case LN:
             return "ln";
-    }
+    };
+
+    return NULL;
 }
 
 void DumpTreeNode (TreeNode* node, FILE* file)
@@ -358,32 +354,21 @@ void DumpTreeNode (TreeNode* node, FILE* file)
                        node);
     }
 
-    // Print unary operation
     if (node->type != FUNC)
     {
         if (node->left != NULL)
-        {
             fprintf (file, "%o -> %o", node, node->left);
-        }
         else
-        {
             return;
-        }
     }
 
     if (node->right != NULL)
-    {
         fprintf (file, "\n %o -> %o \n", node, node->right);
-    }
     else
-    {
         return;
-    }
 
     if (node->type != FUNC)
-    {
         DumpTreeNode (node->left, file);
-    }
     DumpTreeNode (node->right, file);
 }
 
@@ -397,7 +382,6 @@ void OptimiseNumTreeNode (TreeNode* node)
     node->right = NULL;
 }
 
-//
 void OptimiseAndDelSubTree (TreeNode* node_parent, TreeNode* sub_node)
 {
     if (sub_node == node_parent->right)
@@ -435,27 +419,23 @@ void OptimiseExpressionTree (TreeNode* node, enum PASS pass)
             {
                 OptimiseNumTreeNode (node);
             }
-            else if (node->left->type == NUM && node->left->value == 0)
+            else if (CHECK_NUM(node->left, 0))
             {
                 OptimiseAndDelSubTree (node, node->right);
             }
-            else if (node->right->type == NUM && node->right->value == 0)
+            else if (CHECK_NUM(node->right, 0))
             {
                 OptimiseAndDelSubTree (node, node->left);
             }
         }
-        else if (node->value == OP_MUL || node->value == OP_DIV) // сделать проверку на то сто знаменатель не ноль
+        else if (node->value == OP_MUL || node->value == OP_DIV)
         {
             if (node->left->type == NUM && node->right->type == NUM)
             {
                 OptimiseNumTreeNode (node);
             }
-            // #define CHECK_NUM(node, val) (node->type == NUM && node->value == val)
 
-            // else if ( CHECK_NUM(node->left, 0) ||
-            //           CHECK_NUM(node->right, 0)
-            else if ((node->left->type == NUM && node->left->value == 0) ||
-                     (node->right->type == NUM && node->right->value == 0))
+            else if (CHECK_NUM(node->left, 0) ||CHECK_NUM(node->right, 0))
             {
                 OptimiseSpecialCases (node, 0);
             }
@@ -476,11 +456,11 @@ void OptimiseExpressionTree (TreeNode* node, enum PASS pass)
         }
         else if (node->value == OP_EXP)
         {
-            if (node->right->type == NUM && node->right->value == 0)
+            if (CHECK_NUM(node->right, 0))
             {
                 OptimiseSpecialCases (node, 1);
             }
-            else if (node->right->type == NUM && node->right->value == 1)
+            else if (CHECK_NUM(node->right, 1))
             {
                 OptimiseAndDelSubTree (node, node->left);
             }
@@ -605,7 +585,7 @@ void LatexOp (TreeNode* node, FILE* latex_file)
         default:
         {
             PutBracketsBefore (node, latex_file, '(');
-            EvalLatex (node->left, latex_file);
+            PrintLatex (node->left, latex_file);
             PutBracketsBefore (node, latex_file, ')');
             break;
         }
@@ -624,7 +604,7 @@ void LatexOp (TreeNode* node, FILE* latex_file)
         default:
         {
             PutBracketsAfter (node, latex_file, '(');
-            EvalLatex (node->right, latex_file);
+            PrintLatex (node->right, latex_file);
             PutBracketsAfter (node, latex_file, ')');
             break;
         }
@@ -635,7 +615,7 @@ void LatexOp (TreeNode* node, FILE* latex_file)
 }
 
 
-void EvalLatex (TreeNode* node, FILE* latex_file)
+void PrintLatex (TreeNode* node, FILE* latex_file)
 {
     switch (node->type)
     {
@@ -659,7 +639,7 @@ void TextFuncName (TreeNode* node, FILE* file, char* func_name)
     fprintf (file, "%s ", func_name);
     if (node->type != OP || node->value != OP_DIV)
         fprintf (file, "(");
-    EvalLatex (node, file);
+    PrintLatex (node, file);
     if (node->type != OP || node->value != OP_DIV)
         fprintf (file, ")");
 }

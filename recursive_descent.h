@@ -4,6 +4,12 @@
 #include "differential.h"
 #include "recursive_descent.h"
 
+struct Position
+{
+    const char* str;
+    int position;
+};
+
 TreeNode* GetExp (Position* data);
 TreeNode* GetG (const char* str, Position* data);
 TreeNode* GetN (Position* data);
