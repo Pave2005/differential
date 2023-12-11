@@ -18,4 +18,6 @@ TreeNode* GetE (Position* data);
 TreeNode* GetP (Position* data);
 TreeNode* GetId (Position* data);
 
+void SkipSpaces (Position* data);
+
 #endif

@@ -1,1 +1,1 @@
-ln(1+sin(x))
+ln(1 + sin(x))

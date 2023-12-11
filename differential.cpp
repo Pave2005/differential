@@ -12,25 +12,7 @@ char* TreeCtor (Tree* tree, FILE* file)
     long file_size = FileSize (file);
     char* tmp_buf = ReadText (file_size, file);
     fclose (file);
-    file = fopen ("data_base.txt", "w");
     return tmp_buf;
-}
-
-void TreeDtor (Tree* tree, FILE* file, TreeNode* node)
-{
-    static int is_file_closed = 0;
-    if (is_file_closed == 0)
-    {
-        fclose (file);
-        is_file_closed = 1;
-    }
-
-    if (node != NULL)
-    {
-        TreeDtor (tree, file, node->left);
-        TreeDtor (tree, file, node->right);
-        free (node);
-    }
 }
 
 void SubstitutePoint (TreeNode* node, const float value)
@@ -322,6 +304,22 @@ char* GetFuncName (int func)
     };
 
     return NULL;
+}
+
+int GetFuncCode (char* func_name)
+{
+    if (strcmp ("sin", func_name) == 0)
+        return SIN;
+    else if (strcmp ("cos", func_name) == 0)
+        return COS;
+    else if (strcmp ("tg", func_name) == 0)
+        return TAN;
+    else if (strcmp ("ctg", func_name) == 0)
+        return COT;
+    else if (strcmp ("ln", func_name) == 0)
+        return LN;
+
+    return 0;
 }
 
 void DumpTreeNode (TreeNode* node, FILE* file)

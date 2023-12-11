@@ -29,5 +29,5 @@ int main ()
 
     ExpressionTreeDump (dif_root, CALCULATED);
 
-    TreeDtor (&tree, file, dif_root);
+    TreeDel (dif_root);
 }

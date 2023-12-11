@@ -1,8 +1,17 @@
 #include "recursive_descent.h"
 #include "differential.h"
 
+void SkipSpaces (Position* data)
+{
+    while (data->str[data->position] == ' ' || data->str[data->position] == '\n')
+    {
+        data->position++;
+    }
+}
+
 TreeNode* GetP (Position* data)
 {
+    SkipSpaces (data);
     if (data->str[data->position] == '(')
     {
         TreeNode* val = 0;
@@ -24,6 +33,7 @@ TreeNode* GetP (Position* data)
 TreeNode* GetT (Position* data)
 {
     TreeNode* val = GetExp (data);
+    SkipSpaces (data);
     while (data->str[data->position] == '*' || data->str[data->position] == '/') // if
     {
         int op = data->str[data->position];
@@ -49,6 +59,7 @@ TreeNode* GetT (Position* data)
 TreeNode* GetE (Position* data)
 {
     TreeNode* val = GetT (data);
+    SkipSpaces (data);
     while (data->str[data->position] == '+' || data->str[data->position] == '-')
     {
         int op = data->str[data->position];
@@ -83,6 +94,7 @@ TreeNode* GetN (Position* data)
 {
     int val = 0;
     int old_p = data->position;
+    SkipSpaces (data);
     while ('0' <= data->str[data->position] && data->str[data->position] <= '9')
     {
         val = val * 10 + data->str[data->position] - '0';
@@ -95,51 +107,22 @@ TreeNode* GetId (Position* data)
 {
     char arg[20] = "";
     int counter = 0;
+    SkipSpaces (data);
     while (isalpha (data->str[data->position]) != 0)
     {
         sprintf (arg + counter, "%c", data->str[data->position]);
         data->position++;
         counter++;
     }
-    if (strcmp ("sin", arg) == 0 && data->str[data->position] == '(')
+    SkipSpaces (data);
+    int func_code = GetFuncCode (arg);
+    if (func_code != 0)
     {
         TreeNode* val = NULL;
         data->position++;
         val = GetE (data);
         data->position++;
-        return NewNode (FUNC, SIN, NULL, val);
-    }
-    else if (strcmp ("cos", arg) == 0 && data->str[data->position] == '(')
-    {
-        TreeNode* val = NULL;
-        data->position++;
-        val = GetE (data);
-        data->position++;
-        return NewNode (FUNC, COS, NULL, val);
-    }
-    else if (strcmp ("tg", arg) == 0 && data->str[data->position] == '(')
-    {
-        TreeNode* val = NULL;
-        data->position++;
-        val = GetE (data);
-        data->position++;
-        return NewNode (FUNC, TAN, NULL, val);
-    }
-    else if (strcmp ("ctg", arg) == 0 && data->str[data->position] == '(')
-    {
-        TreeNode* val = NULL;
-        data->position++;
-        val = GetE (data);
-        data->position++;
-        return NewNode (FUNC, COT, NULL, val);
-    }
-    else if (strcmp ("ln", arg) == 0 && data->str[data->position] == '(')
-    {
-        TreeNode* val = NULL;
-        data->position++;
-        val = GetE (data);
-        data->position++;
-        return NewNode (FUNC, LN, NULL, val);
+        return NewNode (FUNC, func_code, NULL, val);
     }
     return NewNode (VAR, 0, NULL, NULL);
 }
@@ -147,6 +130,7 @@ TreeNode* GetId (Position* data)
 TreeNode* GetExp (Position* data)
 {
     TreeNode* val = GetP (data);
+    SkipSpaces (data);
     if (data->str[data->position] == '^')
     {
         data->position++;

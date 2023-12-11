@@ -10,7 +10,7 @@
 
 const int EMPTY = -888;
 
-struct TreeNode
+struct TreeNode   // не получается ввести union выдает ошибку по двойной очистке указателя
 {
     TreeNode* left;
     TreeNode* right;
@@ -68,7 +68,6 @@ char GetOpChar (int command);
 void SubstitutePoint (TreeNode* node, const float value);
 float EvalExpression (TreeNode* node, const float value);
 char* TreeCtor (Tree* tree, FILE* file);
-void TreeDtor (Tree* tree, FILE* file, TreeNode* node);
 TreeNode* CopyTree (TreeNode* node);
 float EvalNumExpression(TreeNode* node);
 TreeNode* NewNode (enum TYPES node_type, int node_value, TreeNode* left, TreeNode* right);
@@ -89,6 +88,7 @@ float EvalBinaryOp (TreeNode* node);
 float EvalUnaryOp (TreeNode* node);
 TreeNode* DiffUnaryOp (int value, TreeNode* expr);
 TreeNode* DiffBinaryOp (int value, TreeNode* expr1, TreeNode* expr2);
+int GetFuncCode (char* func_name);
 
 int Factorial (const int num);
 TreeNode* Taylor (const TreeNode* node, const int order);
