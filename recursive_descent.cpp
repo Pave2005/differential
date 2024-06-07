@@ -3,6 +3,7 @@
 
 void SkipSpaces (Position* data)
 {
+    // isspace
     while (data->str[data->position] == ' ' || data->str[data->position] == '\n')
     {
         data->position++;
@@ -95,6 +96,7 @@ TreeNode* GetN (Position* data)
     int val = 0;
     int old_p = data->position;
     SkipSpaces (data);
+    // atoi
     while ('0' <= data->str[data->position] && data->str[data->position] <= '9')
     {
         val = val * 10 + data->str[data->position] - '0';
@@ -108,7 +110,7 @@ TreeNode* GetId (Position* data)
     char arg[20] = "";
     int counter = 0;
     SkipSpaces (data);
-    while (isalpha (data->str[data->position]) != 0)
+    while (!isalpha (data->str[data->position]))
     {
         sprintf (arg + counter, "%c", data->str[data->position]);
         data->position++;

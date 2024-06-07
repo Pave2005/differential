@@ -118,6 +118,11 @@ TreeNode* GetSeriesMember (const TreeNode* node, const int order);
 #define LN(expr) NewNode (OP, OP_MUL, DiffTree (expr), NewNode (OP, OP_DIV,                                 \
                                                                       NewNode (NUM, 1, NULL, NULL),         \
                                                                       CopyTree (expr)));
+
+// #define MUL(expr1, expr2) NewNode(OP, OP_MUL, expr1, expr2);
+
+//ADD(MUL(DiffTree(expr1), expr2), MUL(expr1, DiffTree(expr2))
+
 #define ADD(expr1, expr2) NewNode (OP, OP_ADD, DiffTree (expr1), DiffTree (expr2))
 #define SUB(expr1, expr2) NewNode (OP, OP_SUB, DiffTree (expr1), DiffTree (expr2))
 #define MUL(expr1, expr2) NewNode (OP, OP_ADD, NewNode (OP, OP_MUL, DiffTree (expr1), CopyTree (expr2)),    \

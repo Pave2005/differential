@@ -247,10 +247,11 @@ void ExpressionTreeDump (TreeNode* node, enum EXPRESSION cmd_expression)
     {
         file = fopen ("original.dot", "w");
     }
-    else if (cmd_expression == CALCULATED)
+    if (cmd_expression == CALCULATED)
     {
         file = fopen ("calculated.dot", "w");
     }
+
     fprintf (file, "digraph G { \n"
                     "node [shape = record];\n"
                     " %o ", node);
@@ -262,7 +263,7 @@ void ExpressionTreeDump (TreeNode* node, enum EXPRESSION cmd_expression)
     {
         system ("dot -T png original.dot -o original.png");
     }
-    else if (cmd_expression == CALCULATED)
+    if (cmd_expression == CALCULATED)
     {
         system ("dot -T png calculated.dot -o calculated.png");
     }
@@ -327,7 +328,7 @@ void DumpTreeNode (TreeNode* node, FILE* file)
     if (node->type == NUM)
     {
         fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue "
-                       " label = \" %f \"];\n",
+                       " label = \" %g \"];\n",
                        node,
                        (float)node->value);
     }
@@ -367,6 +368,7 @@ void DumpTreeNode (TreeNode* node, FILE* file)
 
     if (node->type != FUNC)
         DumpTreeNode (node->left, file);
+
     DumpTreeNode (node->right, file);
 }
 
@@ -433,7 +435,7 @@ void OptimiseExpressionTree (TreeNode* node, enum PASS pass)
                 OptimiseNumTreeNode (node);
             }
 
-            else if (CHECK_NUM(node->left, 0) ||CHECK_NUM(node->right, 0))
+            else if (CHECK_NUM(node->left, 0) || CHECK_NUM(node->right, 0))
             {
                 OptimiseSpecialCases (node, 0);
             }
@@ -515,7 +517,7 @@ void PutBracketsBefore (TreeNode* node, FILE* latex_file, char bracket_type)
     {
         if (node->left->value != OP_MUL && node->left->value != OP_DIV &&
            (node->left->value != OP_ADD && node->left->value != OP_SUB) &&
-           node->value != OP_EXP)
+            node->value != OP_EXP)
             fprintf (latex_file, "%c", bracket_type);
     }
 }
@@ -524,9 +526,9 @@ void PutBracketsAfter (TreeNode* node, FILE* latex_file, char bracket_type)
 {
     if (node->value == OP_MUL)
     {
-        if ((node->right->value != OP_MUL && node->right->value != OP_EXP) &&
-           (node->left->type != NUM || (node->right->type != OP || node->right->value != OP_DIV)) &&
-           (node->left->value != OP_DIV || node->right->value != OP_DIV))
+        if ((node->right->value != OP_MUL && node->right->value != OP_EXP)                       &&
+            (node->left->type != NUM || node->right->type != OP || node->right->value != OP_DIV) &&
+            (node->left->value != OP_DIV || node->right->value != OP_DIV))
             fprintf (latex_file, "%c", bracket_type);
     }
     else if (node->value != OP_DIV)
@@ -571,15 +573,17 @@ void LatexOp (TreeNode* node, FILE* latex_file)
                 if (node->left->value == -1)
                     fprintf (latex_file, "-");
                 else
-                    fprintf (latex_file, "%f", (float)node->left->value);
+                    fprintf (latex_file, "%g", (float)node->left->value);
             }
             else
-                fprintf (latex_file, "%f", (float)node->left->value);
+                fprintf (latex_file, "%g", (float)node->left->value);
             break;
         }
         case VAR:
+        {
             fprintf (latex_file, "x");
             break;
+        }
         default:
         {
             PutBracketsBefore (node, latex_file, '(');
@@ -594,7 +598,7 @@ void LatexOp (TreeNode* node, FILE* latex_file)
     switch (node->right->type)
     {
         case NUM:
-            fprintf (latex_file, "%f", (float)node->right->value);
+            fprintf (latex_file, "%g", (float)node->right->value);
             break;
         case VAR:
             fprintf (latex_file, "x");
@@ -618,13 +622,15 @@ void PrintLatex (TreeNode* node, FILE* latex_file)
     switch (node->type)
     {
         case OP:
+            // PrintLatexOp
             LatexOp (node, latex_file);
             break;
         case FUNC:
+            // PrintFuncName
             TextFuncName (node->right, latex_file, GetFuncName ((int)node->value));
             break;
         case NUM:
-            fprintf (latex_file, "%f", (float)node->value);
+            fprintf (latex_file, "%g", (float)node->value);
             break;
         case VAR:
             fprintf (latex_file, "x");

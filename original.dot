@@ -1,14 +1,34 @@
 digraph G { 
 node [shape = record];
- 11370057340  11370057340 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " ln "];
+ 3770060000  3770060000 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " + "];
+3770060000 -> 3770056260
+ 3770060000 -> 3770057740 
+ 3770056260 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " ^ "];
+3770056260 -> 3770056160
+ 3770056260 -> 3770056220 
+ 3770056160 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " sin "];
 
- 11370057340 -> 11370057300 
- 11370057300 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " + "];
-11370057300 -> 11370057140
- 11370057300 -> 11370057540 
- 11370057140 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 1.000000 "];
- 11370057540 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " sin "];
+ 3770056160 -> 3770056120 
+ 3770056120 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " + "];
+3770056120 -> 3770057340
+ 3770056120 -> 3770056060 
+ 3770057340 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " * "];
+3770057340 -> 3770057140
+ 3770057340 -> 3770057300 
+ 3770057140 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 15 "];
+ 3770057300 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " x "];
+ 3770056060 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 5 "];
+ 3770056220 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 3 "];
+ 3770057740 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " cos "];
 
- 11370057540 -> 11370057500 
- 11370057500 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " x "];
+ 3770057740 -> 3770056520 
+ 3770056520 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " - "];
+3770056520 -> 3770056420
+ 3770056520 -> 3770056460 
+ 3770056420 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " ^ "];
+3770056420 -> 3770056320
+ 3770056420 -> 3770056360 
+ 3770056320 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " x "];
+ 3770056360 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 3 "];
+ 3770056460 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 27 "];
 }

@@ -1,28 +1,36 @@
 digraph G { 
 node [shape = record];
- 11540050200  11540050200 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " + "];
-11540050200 -> 11540043040
- 11540050200 -> 11540050100 
- 11540043040 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " + "];
-11540043040 -> 11540043100
- 11540043040 -> 11540046440 
- 11540043100 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " x "];
- 11540046440 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " * "];
-11540046440 -> 11540046500
- 11540046440 -> 11540046640 
- 11540046500 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " -0.500000 "];
- 11540046640 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " ^ "];
-11540046640 -> 11540046700
- 11540046640 -> 11540046740 
- 11540046700 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " x "];
- 11540046740 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 2.000000 "];
- 11540050100 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " * "];
-11540050100 -> 11540047040
- 11540050100 -> 11540047200 
- 11540047040 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 0.166667 "];
- 11540047200 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " ^ "];
-11540047200 -> 11540047100
- 11540047200 -> 11540047140 
- 11540047100 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " x "];
- 11540047140 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 3.000000 "];
+ 3774237200  3774237200 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " + "];
+3774237200 -> 3774041140
+ 3774237200 -> 3774237140 
+ 3774041140 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " -1 "];
+ 3774237140 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " + "];
+3774237140 -> 3774235000
+ 3774237140 -> 3774235740 
+ 3774235000 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " + "];
+3774235000 -> 3774235040
+ 3774235000 -> 3774235400 
+ 3774235040 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " * "];
+3774235040 -> 3774235100
+ 3774235040 -> 3774235240 
+ 3774235100 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 11 "];
+ 3774235240 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " x "];
+ 3774235400 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " * "];
+3774235400 -> 3774235440
+ 3774235400 -> 3774235600 
+ 3774235440 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 245.5 "];
+ 3774235600 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " ^ "];
+3774235600 -> 3774235640
+ 3774235600 -> 3774235700 
+ 3774235640 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " x "];
+ 3774235700 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 2 "];
+ 3774235740 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " * "];
+3774235740 -> 3774236000
+ 3774235740 -> 3774236140 
+ 3774236000 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " -3003 "];
+ 3774236140 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " ^ "];
+3774236140 -> 3774236200
+ 3774236140 -> 3774236240 
+ 3774236200 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " x "];
+ 3774236240 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 3 "];
 }

@@ -19,7 +19,7 @@ int main ()
 
 
     //TreeNode* dif_root = DiffTree (tree.root);
-    TreeNode* dif_root = Taylor (tree.root, 3);
+    TreeNode* dif_root = Taylor (tree.root, 5);
     TreeDel (tree.root);
 
     OptimiseExpressionTree (dif_root, FIRST_PASS);
